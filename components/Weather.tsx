@@ -1,8 +1,12 @@
 import Image from "next/image";
 import React from "react";
+import type { WeatherData } from "../types/weather";
 
-const Weather = ({ data }) => {
-  console.log(data);
+interface WeatherProps {
+  data: WeatherData;
+}
+
+const Weather = ({ data }: WeatherProps) => {
   return (
     <div className="relative flex flex-col justify-between max-w-[500px] w-full h-[40vh] m-auto  pt-5 mb-5 text-white z-10 ">
       <div>
@@ -15,7 +19,7 @@ const Weather = ({ data }) => {
         <div className="relative flex justify-between px-5 pt-2">
           <div className="flex flex-col items-center  ">
             <Image
-              src={`http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`}
+              src={`https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`}
               alt="/"
               width="100"
               height="100"
