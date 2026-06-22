@@ -61,7 +61,7 @@ const CurrentConditions = ({ forecast }: CurrentConditionsProps) => {
         {stats.map((s) => (
           <div
             key={s.label}
-            className="rounded-xl bg-white/10 border border-white/10 px-3 py-2"
+            className="rounded-xl bg-white/10 border border-white/10 backdrop-blur-sm px-3 py-2"
           >
             <dt className="text-xs uppercase tracking-wide text-white/60">
               {s.label}

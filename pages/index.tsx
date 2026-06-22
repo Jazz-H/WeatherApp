@@ -7,7 +7,9 @@ import CurrentConditions from "../components/CurrentConditions";
 import HourlyStrip from "../components/HourlyStrip";
 import DailyOutlook from "../components/DailyOutlook";
 import RecommendationHero from "../components/RecommendationHero";
+import Logo from "../components/Logo";
 import Spinner from "../components/Spinner";
+import { skyThemeFor } from "../lib/skyTheme";
 import {
   fetchForecast,
   geocodeCity,
@@ -170,23 +172,32 @@ export default function Home() {
     if (location) void loadForecast(location, next);
   };
 
+  const sky = skyThemeFor(forecast?.current);
+
   return (
     <>
       <Head>
-        <title>Clearcast — what can you do today?</title>
+        <title>Clearcast</title>
         <meta
           name="description"
           content="Clearcast turns the forecast into a plain-English plan for your day."
         />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="alternate icon" href="/favicon.ico" />
       </Head>
 
-      <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-blue-950 px-4 py-8">
+      <main
+        className="min-h-screen px-4 py-8"
+        style={{ backgroundImage: sky.gradient }}
+      >
         <div className="max-w-[640px] mx-auto">
           <header className="flex items-center justify-between mb-6">
-            <h1 className="text-xl font-bold text-white tracking-tight">
-              Clearcast
-            </h1>
+            <div className="flex items-center gap-2">
+              <Logo size={28} />
+              <h1 className="text-xl font-bold text-white tracking-tight">
+                Clearcast
+              </h1>
+            </div>
             <UnitToggle units={units} onChange={handleUnitsChange} />
           </header>
 

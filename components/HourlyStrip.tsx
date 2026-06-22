@@ -22,7 +22,7 @@ const HourlyStrip = ({ forecast }: HourlyStripProps) => {
           return (
             <li
               key={h.time}
-              className="flex-shrink-0 w-20 rounded-xl bg-white/10 border border-white/10 px-2 py-3 text-center"
+              className="flex-shrink-0 w-20 rounded-xl bg-white/10 border border-white/10 backdrop-blur-sm px-2 py-3 text-center"
             >
               <p className="text-xs text-white/70">{formatHour(h.time)}</p>
               <Icon size={34} aria-label={label} className="mx-auto my-1" />
