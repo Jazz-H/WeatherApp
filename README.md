@@ -21,6 +21,8 @@ background shifts with the current conditions and time of day.
   manual toggle that's remembered.
 - **Cheap & fast** — the AI response is cached per `lat,lon,hour`, and a daily call cap
   bounds cost. The Claude key never leaves the server.
+- **Installable, offline-first PWA** — installable to the home screen; the service worker
+  precaches the app shell and serves the last forecast when there's no signal.
 
 ## Tech stack
 
@@ -84,6 +86,8 @@ yarn lint       # ESLint
 yarn typecheck  # tsc --noEmit (strict)
 yarn test       # Vitest
 yarn coverage   # Vitest with coverage
+
+node scripts/generate-icons.mjs  # regenerate PWA icons from public/icon.svg
 ```
 
 ## Testing
