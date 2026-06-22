@@ -2,12 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-}
+};
 
-module.exports = {
-  images:{
-    domains:[
-      'images.unsplash.com', 'openweathermap.org'
-    ]
-  }
-}
+module.exports = nextConfig;
