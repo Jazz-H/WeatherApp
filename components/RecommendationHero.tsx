@@ -32,14 +32,16 @@ const RecommendationHero = ({ recommendation }: RecommendationHeroProps) => {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="w-full flex items-center gap-3 px-4 py-3 text-left"
+        className="w-full flex items-start gap-3 px-4 py-3 text-left"
       >
         <span
-          className="flex-shrink-0 h-2.5 w-2.5 rounded-full bg-amber-400"
+          className="flex-shrink-0 mt-1.5 h-2.5 w-2.5 rounded-full bg-amber-400"
           aria-hidden
         />
         <span className="flex-1 min-w-0">
-          <span className="block truncate font-semibold">{headline}</span>
+          <span className="block font-semibold leading-snug line-clamp-2">
+            {headline}
+          </span>
         </span>
         {bestWindow && (
           <span className="hidden sm:inline flex-shrink-0 rounded-full bg-amber-400/15 text-amber-200 border border-amber-300/30 px-2.5 py-0.5 text-xs font-medium">
