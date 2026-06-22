@@ -1,3 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  /* Thin, branded horizontal scrollbar for the hourly strip. */
+  .scrollbar-sky {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(251, 191, 36, 0.55) rgba(255, 255, 255, 0.08);
+  }
+  .scrollbar-sky::-webkit-scrollbar {
+    height: 6px;
+  }
+  .scrollbar-sky::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 9999px;
+  }
+  .scrollbar-sky::-webkit-scrollbar-thumb {
+    background: rgba(251, 191, 36, 0.55);
+    border-radius: 9999px;
+  }
+  .scrollbar-sky::-webkit-scrollbar-thumb:hover {
+    background: rgba(251, 191, 36, 0.8);
+  }
+}
