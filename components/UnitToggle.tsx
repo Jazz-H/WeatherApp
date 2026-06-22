@@ -20,7 +20,7 @@ const UnitToggle = ({ units, onChange }: UnitToggleProps) => {
             type="button"
             onClick={() => onChange(u)}
             aria-pressed={active}
-            className={`px-3 py-1 rounded-full transition ${
+            className={`px-3 py-1 rounded-full transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 ${
               active ? "bg-white text-slate-900 font-semibold" : "text-white/80"
             }`}
           >
