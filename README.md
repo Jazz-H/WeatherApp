@@ -1,34 +1,109 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Clearcast
 
-## Getting Started
+A weather app that answers **"what can I actually do today?"** — not just temperature and
+an icon, but a short, AI‑written recommendation: *"Light jacket. Dry until 9pm — good run
+window 6–8pm. Skip the bike, gusts pick up after lunch."*
 
-First, run the development server:
+Clearcast pulls a live forecast, sends a trimmed slice of it to Claude through a
+serverless function, and renders a plain‑English plan: what to wear, which activities are
+**great / ok / skip**, and the best time window — on an **Adaptive Sky** UI whose
+background shifts with the current conditions and time of day.
 
-```bash
-npm run dev
-# or
-yarn dev
+## Features
+
+- **AI recommendation** — the forecast becomes a decision, not a data dump. Structured,
+  schema‑validated output (headline, summary, per‑activity verdict, best window).
+- **Adaptive Sky** — the background gradient reflects the current conditions (clear, cloud,
+  rain, snow, fog, storm) and day/night.
+- **Geolocation + search** — uses the browser location (reverse‑geocoded to a real city
+  name) with a manual city search fallback.
+- **Locale‑aware units** — defaults to °F/mph in the US and °C/km·h elsewhere, with a
+  manual toggle that's remembered.
+- **Cheap & fast** — the AI response is cached per `lat,lon,hour`, and a daily call cap
+  bounds cost. The Claude key never leaves the server.
+
+## Tech stack
+
+| Layer | Choice |
+|---|---|
+| Framework | **Next.js** (pages router) + **React** + **TypeScript** (strict) |
+| Styling | **Tailwind CSS** |
+| Weather data | **Open‑Meteo** (no API key) + **BigDataCloud** reverse geocoding |
+| AI | **Claude `claude-haiku-4-5`** via a Next.js API route (`@anthropic-ai/sdk` + Zod structured output) |
+| Tests | **Vitest** + React Testing Library |
+| CI/CD | **GitHub Actions** (lint → typecheck → test → build) |
+| Hosting | **Netlify** (Next.js runtime; API route runs as a serverless function) |
+
+## Architecture
+
+```
+Browser (Next.js)
+  ├─ navigator.geolocation ──► reverse geocode (BigDataCloud) ──► city + country
+  ├─ GET api.open-meteo.com/forecast ─────────────────────────► forecast JSON
+  └─ POST /api/summarize { trimmedForecast, lat, lon } ───────► Next.js API route
+                                                                 ├─ cache (lat,lon,hour)
+                                                                 ├─ daily call cap
+                                                                 └─ Claude (claude-haiku-4-5)
+                                                                    + Zod structured output
+  ◄─ render: statline recommendation ▸ current ▸ hourly ▸ 7-day, over the Adaptive Sky
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The Claude API key is read only inside `pages/api/summarize.ts` (server‑side) and is never
+included in the client bundle.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Getting started
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+```bash
+# 1. Install
+yarn install
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+# 2. Configure the AI key (see Environment variables)
+cp .env.example .env.local
+# then edit .env.local and paste your sk-ant-... key
 
-## Learn More
+# 3. Run
+yarn dev   # http://localhost:3000
+```
 
-To learn more about Next.js, take a look at the following resources:
+Without `ANTHROPIC_API_KEY` the app still works — it shows the forecast and a graceful
+"recommendation unavailable" notice instead of the AI hero.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Environment variables
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+| Variable | Required | Notes |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | for the AI hero | Server‑only. Get it from the [Anthropic Console](https://console.anthropic.com). Never prefix with `NEXT_PUBLIC_`. |
+| `MAX_AI_CALLS_PER_DAY` | no | Daily cap on Claude calls (default `500`). Bounds cost. |
 
-## Deploy on Vercel
+## Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+yarn dev        # local dev server
+yarn build      # production build
+yarn lint       # ESLint
+yarn typecheck  # tsc --noEmit (strict)
+yarn test       # Vitest
+yarn coverage   # Vitest with coverage
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Testing
+
+Vitest + React Testing Library cover the parts most worth protecting: the
+forecast→prompt trimming, the recommendation schema parsing, the Open‑Meteo response
+mapping, the unit‑system / locale logic, the sky‑category mapping, and the recommendation
+UI. Run `yarn test`.
+
+## Deployment (Netlify)
+
+1. **Add new site → Import from GitHub** → pick this repo, deploy branch `main`.
+2. Netlify auto‑detects Next.js (`netlify.toml` pins the build + Node version and enables
+   the Next.js runtime, which turns `/api/summarize` into a serverless function).
+3. **Site settings → Environment variables** → add `ANTHROPIC_API_KEY` (and optionally
+   `MAX_AI_CALLS_PER_DAY`). Redeploy so the function picks it up.
+
+## Screenshots
+
+<!-- Add real screenshots once captured -->
+| Recommendation (expanded) | Adaptive Sky |
+|---|---|
+| _add `docs/screenshot-hero.png`_ | _add `docs/screenshot-sky.png`_ |
