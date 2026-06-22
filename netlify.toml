@@ -1,0 +1,14 @@
+# Netlify configuration for the Clearcast (Next.js) app.
+# The Next.js Runtime plugin turns API routes (e.g. /api/summarize) into
+# serverless functions automatically, so the server-side Claude proxy works
+# without extra config. ANTHROPIC_API_KEY is set in the Netlify UI, never here.
+
+[build]
+  command = "yarn build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
