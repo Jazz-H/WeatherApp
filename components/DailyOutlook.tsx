@@ -15,7 +15,7 @@ const DailyOutlook = ({ forecast }: DailyOutlookProps) => {
       <h3 className="text-sm uppercase tracking-wide text-white/60 mb-2">
         7-day outlook
       </h3>
-      <ul className="divide-y divide-white/10">
+      <ul className="divide-y divide-white/10 rounded-xl bg-white/10 border border-white/10 backdrop-blur-sm px-3">
         {forecast.daily.map((d, i) => {
           const { icon: Icon, label } = getWeatherInfo(d.weatherCode);
           return (

@@ -15,7 +15,10 @@ const SYSTEM_PROMPT =
   "what the user can do today. Be specific and decisive. Recommend what to wear and " +
   "which activities are good, ok, or worth skipping, and the best time window. " +
   "Never just restate the raw numbers — translate them into a decision. " +
-  "Suggest 3-4 common activities (e.g. Run, Bike, Walk the dog, Wash the car).";
+  "Suggest 3-4 common activities (e.g. Run, Bike, Walk the dog, Wash the car). " +
+  "Keep the headline under ~10 words. " +
+  "bestWindow must be a SHORT time phrase only, like '6-8pm' or 'after 9pm' or null — " +
+  "never a full sentence or a date.";
 
 // In-memory cache keyed by lat,lon,YYYY-MM-DD-HH. Per the brief this avoids
 // re-calling the model on every refresh. It's per-instance and resets on cold

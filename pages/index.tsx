@@ -7,19 +7,45 @@ import CurrentConditions from "../components/CurrentConditions";
 import HourlyStrip from "../components/HourlyStrip";
 import DailyOutlook from "../components/DailyOutlook";
 import RecommendationHero from "../components/RecommendationHero";
+import Logo from "../components/Logo";
 import Spinner from "../components/Spinner";
+import { skyThemeFor } from "../lib/skyTheme";
 import {
   fetchForecast,
   geocodeCity,
   locationFromCoords,
 } from "../lib/openMeteo";
+import { reverseGeocode } from "../lib/reverseGeocode";
+import { unitsForCountry, unitsFromLocale } from "../lib/units";
 import { buildPromptPayload } from "../lib/forecastToPrompt";
 import type { Forecast, GeoLocation, Units } from "../types/weather";
 import type { Recommendation } from "../lib/recommendationSchema";
 
 const UNITS_KEY = "clearcast:units";
+const UNITS_MANUAL_KEY = "clearcast:units-manual";
 type Status = "idle" | "loading" | "ready" | "error";
 type RecStatus = "idle" | "loading" | "ready" | "unavailable";
+
+// Read the stored unit preference. `manual` is true only once the user has
+// explicitly used the toggle — until then units auto-follow the location.
+function readUnitPref(): { units: Units | null; manual: boolean } {
+  if (typeof window === "undefined") return { units: null, manual: false };
+  const manual = window.localStorage.getItem(UNITS_MANUAL_KEY) === "true";
+  const stored = window.localStorage.getItem(UNITS_KEY);
+  return {
+    units: stored === "imperial" || stored === "metric" ? stored : null,
+    manual,
+  };
+}
+
+function unitsForLocation(loc: GeoLocation): Units {
+  const pref = readUnitPref();
+  if (pref.manual && pref.units) return pref.units; // respect explicit choice
+  if (loc.country) return unitsForCountry(loc.country);
+  return unitsFromLocale(
+    typeof navigator !== "undefined" ? navigator.language : undefined
+  );
+}
 
 export default function Home() {
   const [units, setUnits] = useState<Units>("imperial");
@@ -32,10 +58,11 @@ export default function Home() {
   );
   const [recStatus, setRecStatus] = useState<RecStatus>("idle");
 
-  // Restore unit preference once, on the client (avoids hydration mismatch).
+  // Restore a manual unit preference once, on the client (avoids hydration
+  // mismatch). Auto-derived units are applied later when a location resolves.
   useEffect(() => {
-    const stored = window.localStorage.getItem(UNITS_KEY);
-    if (stored === "imperial" || stored === "metric") setUnits(stored);
+    const pref = readUnitPref();
+    if (pref.manual && pref.units) setUnits(pref.units);
   }, []);
 
   // Ask the serverless function for an AI recommendation. Failure here is
@@ -74,6 +101,17 @@ export default function Home() {
     [fetchRecommendation]
   );
 
+  // Resolve the right units for this place (unless the user picked manually),
+  // sync the toggle, then load the forecast.
+  const loadForLocation = useCallback(
+    async (loc: GeoLocation) => {
+      const u = unitsForLocation(loc);
+      setUnits(u);
+      await loadForecast(loc, u);
+    },
+    [loadForecast]
+  );
+
   const handleSearch = useCallback(
     async (query: string) => {
       setStatus("loading");
@@ -85,13 +123,13 @@ export default function Home() {
           setError(`No match for "${query}". Try another city.`);
           return;
         }
-        await loadForecast(matches[0], units);
+        await loadForLocation(matches[0]);
       } catch {
         setStatus("error");
         setError("Search failed. Please try again.");
       }
     },
-    [loadForecast, units]
+    [loadForLocation]
   );
 
   const handleUseLocation = useCallback(() => {
@@ -102,18 +140,24 @@ export default function Home() {
     }
     setStatus("loading");
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        void loadForecast(
-          locationFromCoords(pos.coords.latitude, pos.coords.longitude),
-          units
-        );
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        // Reverse-geocode for a real city name + country (drives units);
+        // fall back to bare coordinates if that lookup fails.
+        let loc: GeoLocation;
+        try {
+          loc = await reverseGeocode(latitude, longitude);
+        } catch {
+          loc = locationFromCoords(latitude, longitude);
+        }
+        void loadForLocation(loc);
       },
       () => {
         setStatus("error");
         setError("Location access denied. Search for a city instead.");
       }
     );
-  }, [loadForecast, units]);
+  }, [loadForLocation]);
 
   // Try geolocation once on first load.
   useEffect(() => {
@@ -124,26 +168,36 @@ export default function Home() {
   const handleUnitsChange = (next: Units) => {
     setUnits(next);
     window.localStorage.setItem(UNITS_KEY, next);
+    window.localStorage.setItem(UNITS_MANUAL_KEY, "true"); // explicit override
     if (location) void loadForecast(location, next);
   };
+
+  const sky = skyThemeFor(forecast?.current);
 
   return (
     <>
       <Head>
-        <title>Clearcast — what can you do today?</title>
+        <title>Clearcast</title>
         <meta
           name="description"
           content="Clearcast turns the forecast into a plain-English plan for your day."
         />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="alternate icon" href="/favicon.ico" />
       </Head>
 
-      <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-blue-950 px-4 py-8">
+      <main
+        className="min-h-screen px-4 py-8"
+        style={{ backgroundImage: sky.gradient }}
+      >
         <div className="max-w-[640px] mx-auto">
           <header className="flex items-center justify-between mb-6">
-            <h1 className="text-xl font-bold text-white tracking-tight">
-              Clearcast
-            </h1>
+            <div className="flex items-center gap-2">
+              <Logo size={28} />
+              <h1 className="text-xl font-bold text-white tracking-tight">
+                Clearcast
+              </h1>
+            </div>
             <UnitToggle units={units} onChange={handleUnitsChange} />
           </header>
 
