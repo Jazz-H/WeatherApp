@@ -13,7 +13,7 @@ export const RecommendationSchema = z.object({
       reason: z.string(), // short, specific
     })
   ),
-  bestWindow: z.string().nullable(), // "6-8pm" or null
+  bestWindow: z.string().nullable(), // SHORT phrase like "6-8pm"/"after 9pm", or null
 });
 
 export type Verdict = "great" | "ok" | "skip";

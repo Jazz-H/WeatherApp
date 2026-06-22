@@ -38,19 +38,12 @@ const RecommendationHero = ({ recommendation }: RecommendationHeroProps) => {
           className="flex-shrink-0 mt-1.5 h-2.5 w-2.5 rounded-full bg-amber-400"
           aria-hidden
         />
-        <span className="flex-1 min-w-0">
-          <span className="block font-semibold leading-snug line-clamp-2">
-            {headline}
-          </span>
+        <span className="flex-1 min-w-0 font-semibold leading-snug line-clamp-2">
+          {headline}
         </span>
-        {bestWindow && (
-          <span className="hidden sm:inline flex-shrink-0 rounded-full bg-amber-400/15 text-amber-200 border border-amber-300/30 px-2.5 py-0.5 text-xs font-medium">
-            {bestWindow}
-          </span>
-        )}
         <FiChevronDown
           aria-hidden
-          className={`flex-shrink-0 text-white/70 transition-transform ${
+          className={`flex-shrink-0 mt-0.5 text-white/70 transition-transform ${
             open ? "rotate-180" : ""
           }`}
           size={20}
@@ -59,10 +52,10 @@ const RecommendationHero = ({ recommendation }: RecommendationHeroProps) => {
 
       {/* Detail — revealed on expand. */}
       {open && (
-        <div className="px-4 pb-4 -mt-1">
+        <div className="px-4 pb-4">
           {bestWindow && (
-            <p className="sm:hidden mb-2 text-sm text-amber-200">
-              Best window: {bestWindow}
+            <p className="mb-3 rounded-xl bg-amber-400/15 text-amber-100 border border-amber-300/30 px-3 py-2 text-sm">
+              <span className="font-semibold">Best window</span> — {bestWindow}
             </p>
           )}
           <p className="text-white/85">{summary}</p>
