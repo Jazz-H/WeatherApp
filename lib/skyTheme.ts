@@ -31,9 +31,10 @@ export function skyCategory(
 }
 
 const GRADIENTS: Record<SkyCategory, string> = {
-  "clear-day": "linear-gradient(to bottom, #1466a8 0%, #2f8fcf 55%, #3f9bd6 100%)",
+  // Daytime gradients are kept deep enough that white text clears WCAG AA.
+  "clear-day": "linear-gradient(to bottom, #0c3f6b 0%, #155d92 55%, #1f6fa8 100%)",
   "clear-night": "linear-gradient(to bottom, #0f2027 0%, #203a43 60%, #2c5364 100%)",
-  "cloud-day": "linear-gradient(to bottom, #355c7d 0%, #4a7fa0 60%, #5b90ad 100%)",
+  "cloud-day": "linear-gradient(to bottom, #2d4f6b 0%, #3d6c8a 60%, #4a7c98 100%)",
   "cloud-night": "linear-gradient(to bottom, #1a2433 0%, #243244 60%, #2c3e50 100%)",
   fog: "linear-gradient(to bottom, #4a525e 0%, #353c47 60%, #2b313a 100%)",
   rain: "linear-gradient(to bottom, #2b3a47 0%, #1f2d39 60%, #16202a 100%)",
