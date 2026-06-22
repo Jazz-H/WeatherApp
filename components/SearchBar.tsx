@@ -20,9 +20,9 @@ const SearchBar = ({ onSearch, onUseLocation }: SearchBarProps) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex items-center gap-2 w-full max-w-[500px] mx-auto"
+      className="flex items-center gap-2 w-full"
     >
-      <div className="flex items-center flex-1 gap-2 px-4 py-3 rounded-2xl bg-white/10 border border-white/20 backdrop-blur">
+      <div className="flex items-center flex-1 gap-2 px-4 py-3 rounded-2xl bg-white/10 border border-white/20 backdrop-blur focus-within:ring-2 focus-within:ring-white/60">
         <BsSearch className="text-white/70" size={18} aria-hidden />
         <input
           value={query}
@@ -32,7 +32,11 @@ const SearchBar = ({ onSearch, onUseLocation }: SearchBarProps) => {
           placeholder="Search a city"
           aria-label="Search a city"
         />
-        <button type="submit" aria-label="Search" className="text-white/80 hover:text-white">
+        <button
+          type="submit"
+          aria-label="Search"
+          className="text-white/80 hover:text-white rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+        >
           <BsSearch size={18} />
         </button>
       </div>
@@ -41,7 +45,7 @@ const SearchBar = ({ onSearch, onUseLocation }: SearchBarProps) => {
         onClick={onUseLocation}
         aria-label="Use my location"
         title="Use my location"
-        className="p-3 rounded-2xl bg-white/10 border border-white/20 text-white/80 hover:text-white hover:bg-white/20 transition"
+        className="p-3 rounded-2xl bg-white/10 border border-white/20 text-white/80 hover:text-white hover:bg-white/20 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
       >
         <TbCurrentLocation size={20} />
       </button>

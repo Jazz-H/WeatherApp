@@ -12,6 +12,12 @@ const verdictStyles: Record<Verdict, string> = {
   skip: "bg-rose-500/20 text-rose-200 border-rose-400/30",
 };
 
+const verdictDot: Record<Verdict, string> = {
+  great: "bg-emerald-400",
+  ok: "bg-amber-400",
+  skip: "bg-rose-400",
+};
+
 const verdictLabel: Record<Verdict, string> = {
   great: "Great",
   ok: "OK",
@@ -27,19 +33,37 @@ const RecommendationHero = ({ recommendation }: RecommendationHeroProps) => {
       className="rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md text-white overflow-hidden"
       aria-label="Today's recommendation"
     >
-      {/* Statline — always visible, reads as a single compact row. */}
+      {/* Statline — always visible: headline + at-a-glance verdict pills. */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="w-full flex items-start gap-3 px-4 py-3 text-left"
+        className="w-full flex items-start gap-3 px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 rounded-2xl"
       >
         <span
           className="flex-shrink-0 mt-1.5 h-2.5 w-2.5 rounded-full bg-amber-400"
           aria-hidden
         />
-        <span className="flex-1 min-w-0 font-semibold leading-snug line-clamp-2">
-          {headline}
+        <span className="flex-1 min-w-0">
+          <span className="block font-semibold leading-snug line-clamp-2">
+            {headline}
+          </span>
+          {activities.length > 0 && (
+            <span className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1">
+              {activities.map((a) => (
+                <span
+                  key={a.name}
+                  className="inline-flex items-center gap-1.5 text-xs text-white/75"
+                >
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full ${verdictDot[a.verdict]}`}
+                    aria-hidden
+                  />
+                  {a.name}
+                </span>
+              ))}
+            </span>
+          )}
         </span>
         <FiChevronDown
           aria-hidden

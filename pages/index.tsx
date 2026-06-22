@@ -8,7 +8,7 @@ import HourlyStrip from "../components/HourlyStrip";
 import DailyOutlook from "../components/DailyOutlook";
 import RecommendationHero from "../components/RecommendationHero";
 import Logo from "../components/Logo";
-import Spinner from "../components/Spinner";
+import LoadingSkeleton from "../components/LoadingSkeleton";
 import { skyThemeFor } from "../lib/skyTheme";
 import {
   fetchForecast,
@@ -192,8 +192,12 @@ export default function Home() {
       </Head>
 
       <main
-        className="min-h-screen px-4 py-8"
-        style={{ backgroundImage: sky.gradient }}
+        className="min-h-screen px-4"
+        style={{
+          backgroundImage: sky.gradient,
+          paddingTop: "calc(env(safe-area-inset-top) + 2rem)",
+          paddingBottom: "calc(env(safe-area-inset-bottom) + 2rem)",
+        }}
       >
         <div className="max-w-[640px] mx-auto">
           <header className="flex items-center justify-between mb-6">
@@ -209,7 +213,7 @@ export default function Home() {
           <SearchBar onSearch={handleSearch} onUseLocation={handleUseLocation} />
 
           <div className="mt-6 space-y-6">
-            {status === "loading" && <Spinner />}
+            {status === "loading" && <LoadingSkeleton />}
 
             {status === "error" && (
               <p

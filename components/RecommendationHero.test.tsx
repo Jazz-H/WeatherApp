@@ -15,19 +15,22 @@ const rec: Recommendation = {
 };
 
 describe("RecommendationHero", () => {
-  it("shows the headline collapsed and hides the detail", () => {
+  it("shows the headline and at-a-glance verdict pills, hiding the detail", () => {
     render(<RecommendationHero recommendation={rec} />);
 
     expect(screen.getByText(rec.headline)).toBeInTheDocument();
-    // Detail (summary + verdicts) is not rendered until expanded.
+    // Verdict pills (activity names) are visible while collapsed.
+    expect(screen.getByText("Run")).toBeInTheDocument();
+    // Detail (summary + verdict labels) is not rendered until expanded.
     expect(screen.queryByText(rec.summary)).not.toBeInTheDocument();
+    expect(screen.queryByText("Great")).not.toBeInTheDocument();
     expect(screen.getByRole("button")).toHaveAttribute(
       "aria-expanded",
       "false"
     );
   });
 
-  it("expands to reveal the summary, best window, and activity verdicts", async () => {
+  it("expands to reveal the summary, best window, and verdict labels", async () => {
     const user = userEvent.setup();
     render(<RecommendationHero recommendation={rec} />);
 
@@ -36,7 +39,6 @@ describe("RecommendationHero", () => {
     expect(screen.getByRole("button")).toHaveAttribute("aria-expanded", "true");
     expect(screen.getByText(rec.summary)).toBeInTheDocument();
     expect(screen.getByText(/6-8pm/)).toBeInTheDocument();
-    expect(screen.getByText("Run")).toBeInTheDocument();
     expect(screen.getByText("Great")).toBeInTheDocument();
     expect(screen.getByText("Skip")).toBeInTheDocument();
   });
