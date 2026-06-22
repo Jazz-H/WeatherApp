@@ -9,6 +9,7 @@ interface CurrentConditionsProps {
 
 const CurrentConditions = ({ forecast }: CurrentConditionsProps) => {
   const { current, location, units } = forecast;
+  const today = forecast.daily[0];
   const labels = unitLabels(units);
   const { label, icon: Icon } = getWeatherInfo(
     current.weatherCode,
@@ -40,6 +41,20 @@ const CurrentConditions = ({ forecast }: CurrentConditionsProps) => {
             <p className="text-white/80 mt-1">{label}</p>
           </div>
         </div>
+        {today && (
+          <div className="text-right">
+            <p className="text-xs uppercase tracking-wide text-white/50">
+              Today
+            </p>
+            <p className="text-lg font-semibold">
+              <span aria-label="High">↑ {round(today.tempMax)}°</span>
+              <span className="text-white/50">
+                {" "}
+                · ↓ {round(today.tempMin)}°
+              </span>
+            </p>
+          </div>
+        )}
       </div>
 
       <dl className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-5">
