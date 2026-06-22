@@ -1,20 +1,25 @@
 import Head from "next/head";
+import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import SearchBar from "../components/SearchBar";
 import UnitToggle from "../components/UnitToggle";
 import CurrentConditions from "../components/CurrentConditions";
 import HourlyStrip from "../components/HourlyStrip";
 import DailyOutlook from "../components/DailyOutlook";
+import RecommendationHero from "../components/RecommendationHero";
 import Spinner from "../components/Spinner";
 import {
   fetchForecast,
   geocodeCity,
   locationFromCoords,
 } from "../lib/openMeteo";
+import { buildPromptPayload } from "../lib/forecastToPrompt";
 import type { Forecast, GeoLocation, Units } from "../types/weather";
+import type { Recommendation } from "../lib/recommendationSchema";
 
 const UNITS_KEY = "clearcast:units";
 type Status = "idle" | "loading" | "ready" | "error";
+type RecStatus = "idle" | "loading" | "ready" | "unavailable";
 
 export default function Home() {
   const [units, setUnits] = useState<Units>("imperial");
@@ -22,6 +27,10 @@ export default function Home() {
   const [forecast, setForecast] = useState<Forecast | null>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
+  const [recommendation, setRecommendation] = useState<Recommendation | null>(
+    null
+  );
+  const [recStatus, setRecStatus] = useState<RecStatus>("idle");
 
   // Restore unit preference once, on the client (avoids hydration mismatch).
   useEffect(() => {
@@ -29,19 +38,41 @@ export default function Home() {
     if (stored === "imperial" || stored === "metric") setUnits(stored);
   }, []);
 
-  const loadForecast = useCallback(async (loc: GeoLocation, u: Units) => {
-    setStatus("loading");
-    setError(null);
+  // Ask the serverless function for an AI recommendation. Failure here is
+  // non-fatal: the forecast still renders without the hero.
+  const fetchRecommendation = useCallback(async (data: Forecast) => {
+    setRecStatus("loading");
+    setRecommendation(null);
     try {
-      const data = await fetchForecast(loc, u);
-      setForecast(data);
-      setLocation(loc);
-      setStatus("ready");
+      const { data: body } = await axios.post("/api/summarize", {
+        payload: buildPromptPayload(data),
+        latitude: data.location.latitude,
+        longitude: data.location.longitude,
+      });
+      setRecommendation(body.recommendation);
+      setRecStatus("ready");
     } catch {
-      setStatus("error");
-      setError("Couldn't load the forecast. Please try again.");
+      setRecStatus("unavailable");
     }
   }, []);
+
+  const loadForecast = useCallback(
+    async (loc: GeoLocation, u: Units) => {
+      setStatus("loading");
+      setError(null);
+      try {
+        const data = await fetchForecast(loc, u);
+        setForecast(data);
+        setLocation(loc);
+        setStatus("ready");
+        void fetchRecommendation(data);
+      } catch {
+        setStatus("error");
+        setError("Couldn't load the forecast. Please try again.");
+      }
+    },
+    [fetchRecommendation]
+  );
 
   const handleSearch = useCallback(
     async (query: string) => {
@@ -132,6 +163,21 @@ export default function Home() {
 
             {status === "ready" && forecast && (
               <>
+                {recStatus === "loading" && (
+                  <div className="rounded-2xl bg-white/5 border border-white/10 p-5 animate-pulse text-white/60">
+                    Reading the day for you…
+                  </div>
+                )}
+                {recStatus === "ready" && recommendation && (
+                  <RecommendationHero recommendation={recommendation} />
+                )}
+                {recStatus === "unavailable" && (
+                  <p className="rounded-xl bg-white/5 border border-white/10 text-white/50 px-4 py-3 text-sm">
+                    Recommendation unavailable right now — here&apos;s the
+                    forecast.
+                  </p>
+                )}
+
                 <CurrentConditions forecast={forecast} />
                 <HourlyStrip forecast={forecast} />
                 <DailyOutlook forecast={forecast} />
