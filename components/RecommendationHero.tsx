@@ -41,7 +41,7 @@ const RecommendationHero = ({ recommendation }: RecommendationHeroProps) => {
         className="w-full flex items-start gap-3 px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 rounded-2xl"
       >
         <span
-          className="flex-shrink-0 mt-1.5 h-2.5 w-2.5 rounded-full bg-amber-400"
+          className="flex-shrink-0 mt-1.5 h-2.5 w-2.5 rounded-full bg-white"
           aria-hidden
         />
         <span className="flex-1 min-w-0">
@@ -78,7 +78,7 @@ const RecommendationHero = ({ recommendation }: RecommendationHeroProps) => {
       {open && (
         <div className="px-4 pb-4">
           {bestWindow && (
-            <p className="mb-3 rounded-xl bg-amber-400/15 text-amber-100 border border-amber-300/30 px-3 py-2 text-sm">
+            <p className="mb-3 rounded-xl bg-white/15 text-white border border-white/25 px-3 py-2 text-sm">
               <span className="font-semibold">Best window</span> — {bestWindow}
             </p>
           )}

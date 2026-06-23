@@ -28,13 +28,13 @@ const HourlyStrip = ({ forecast }: HourlyStripProps) => {
               key={h.time}
               className={`snap-start flex-shrink-0 w-20 rounded-xl border backdrop-blur-sm px-2 py-3 text-center ${
                 isNow
-                  ? "bg-white/20 border-amber-300/50 ring-1 ring-amber-300/40"
+                  ? "bg-white/20 border-white/40 ring-1 ring-white/50"
                   : "bg-white/10 border-white/10"
               }`}
             >
               <p
                 className={`text-xs ${
-                  isNow ? "text-amber-200 font-semibold" : "text-white/70"
+                  isNow ? "text-white font-semibold" : "text-white/70"
                 }`}
               >
                 {isNow ? "Now" : formatHour(h.time)}
