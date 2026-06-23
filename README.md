@@ -107,7 +107,6 @@ UI. Run `yarn test`.
 
 ## Screenshots
 
-<!-- Add real screenshots once captured -->
 | Recommendation (expanded) | Adaptive Sky |
 |---|---|
-| _add `docs/screenshot-hero.png`_ | _add `docs/screenshot-sky.png`_ |
+| ![Recommendation hero expanded](docs/screenshot-hero.png) | ![Adaptive sky background](docs/screenshot-sky.png) |
