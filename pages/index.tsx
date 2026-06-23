@@ -8,6 +8,7 @@ import HourlyStrip from "../components/HourlyStrip";
 import DailyOutlook from "../components/DailyOutlook";
 import RecommendationHero from "../components/RecommendationHero";
 import Logo from "../components/Logo";
+import Footer from "../components/Footer";
 import LoadingSkeleton from "../components/LoadingSkeleton";
 import { skyThemeFor } from "../lib/skyTheme";
 import {
@@ -253,6 +254,8 @@ export default function Home() {
               </p>
             )}
           </div>
+
+          <Footer />
         </div>
       </main>
     </>

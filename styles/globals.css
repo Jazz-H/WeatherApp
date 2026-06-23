@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Respect users who prefer reduced motion: neutralize animations/transitions
+   (skeleton pulse, chevron rotate, hover transitions, smooth scroll). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 @layer utilities {
   /* Thin, branded horizontal scrollbar for the hourly strip. */
   .scrollbar-sky {
