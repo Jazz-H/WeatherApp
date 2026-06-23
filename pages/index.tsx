@@ -42,7 +42,7 @@ function readUnitPref(): { units: Units | null; manual: boolean } {
 function unitsForLocation(loc: GeoLocation): Units {
   const pref = readUnitPref();
   if (pref.manual && pref.units) return pref.units; // respect explicit choice
-  if (loc.country) return unitsForCountry(loc.country);
+  if (loc.countryCode ?? loc.country) return unitsForCountry(loc.countryCode ?? loc.country);
   return unitsFromLocale(
     typeof navigator !== "undefined" ? navigator.language : undefined
   );
@@ -160,9 +160,25 @@ export default function Home() {
     );
   }, [loadForLocation]);
 
-  // Try geolocation once on first load.
+  // Silent geolocation attempt on first load. On success weather loads normally;
+  // on failure (denied / unavailable) fall back to idle — don't show an error
+  // banner for something the user never asked for. The location button still
+  // calls handleUseLocation() which shows the error on explicit denial.
   useEffect(() => {
-    handleUseLocation();
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        let loc: GeoLocation;
+        try {
+          loc = await reverseGeocode(latitude, longitude);
+        } catch {
+          loc = locationFromCoords(latitude, longitude);
+        }
+        void loadForLocation(loc);
+      },
+      () => setStatus("idle"),
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

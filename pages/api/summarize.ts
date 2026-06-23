@@ -75,6 +75,9 @@ export default async function handler(
   const key = recommendationCacheKey(latitude, longitude);
   const cached = cache.get(key);
   if (cached) {
+    // Promote to tail so this entry is treated as most-recently-used.
+    cache.delete(key);
+    cache.set(key, cached);
     res.setHeader("X-Cache", "HIT");
     return res.status(200).json({ recommendation: cached, cached: true });
   }
@@ -105,7 +108,9 @@ export default async function handler(
     }
 
     callsToday += 1;
-    if (cache.size >= MAX_CACHE_ENTRIES) cache.clear();
+    if (cache.size >= MAX_CACHE_ENTRIES) {
+      cache.delete(cache.keys().next().value as string);
+    }
     cache.set(key, recommendation);
 
     res.setHeader("X-Cache", "MISS");

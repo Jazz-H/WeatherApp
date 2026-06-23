@@ -32,7 +32,8 @@ export function parseGeocodingResponse(
 ): GeoLocation[] {
   return (raw.results ?? []).map((r) => ({
     name: r.name,
-    country: r.country_code ?? r.country ?? "",
+    country: r.country ?? r.country_code ?? "",
+    countryCode: r.country_code,
     admin1: r.admin1,
     latitude: r.latitude,
     longitude: r.longitude,
