@@ -38,7 +38,7 @@ const DailyOutlook = ({ forecast }: DailyOutlookProps) => {
                 aria-hidden
               >
                 <div
-                  className="absolute inset-y-0 rounded-full bg-white/80"
+                  className="absolute inset-y-0 rounded-full bg-gradient-to-r from-sky-400 to-amber-300"
                   style={{ left: `${lo}%`, width: `${Math.max(hi - lo, 4)}%` }}
                 />
               </div>
