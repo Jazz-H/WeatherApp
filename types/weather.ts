@@ -53,10 +53,11 @@ export interface Forecast {
 export interface UnitLabels {
   temperature: string; // "°F" | "°C"
   windSpeed: string; // "mph" | "km/h"
+  precipitation: string; // "in" | "mm"
 }
 
 export function unitLabels(units: Units): UnitLabels {
   return units === "imperial"
-    ? { temperature: "°F", windSpeed: "mph" }
-    : { temperature: "°C", windSpeed: "km/h" };
+    ? { temperature: "°F", windSpeed: "mph", precipitation: "in" }
+    : { temperature: "°C", windSpeed: "km/h", precipitation: "mm" };
 }

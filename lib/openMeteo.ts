@@ -157,6 +157,7 @@ export async function fetchForecast(
       forecast_days: 7,
       temperature_unit: units === "imperial" ? "fahrenheit" : "celsius",
       wind_speed_unit: units === "imperial" ? "mph" : "kmh",
+      precipitation_unit: units === "imperial" ? "inch" : "mm",
     },
   });
   return parseForecastResponse(data, location, units);
