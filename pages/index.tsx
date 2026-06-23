@@ -200,7 +200,7 @@ export default function Home() {
           paddingBottom: "calc(env(safe-area-inset-bottom) + 2rem)",
         }}
       >
-        <div className="max-w-[640px] mx-auto">
+        <div className="max-w-[640px] lg:max-w-5xl mx-auto">
           <header className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
               <Logo size={28} />
@@ -211,7 +211,12 @@ export default function Home() {
             <UnitToggle units={units} onChange={handleUnitsChange} />
           </header>
 
-          <SearchBar onSearch={handleSearch} onUseLocation={handleUseLocation} />
+          <div className="lg:max-w-xl">
+            <SearchBar
+              onSearch={handleSearch}
+              onUseLocation={handleUseLocation}
+            />
+          </div>
 
           <div className="mt-6 space-y-6">
             {status === "loading" && <LoadingSkeleton />}
@@ -226,26 +231,32 @@ export default function Home() {
             )}
 
             {status === "ready" && forecast && (
-              <>
-                {recStatus === "loading" && (
-                  <div className="rounded-2xl bg-white/5 border border-white/10 p-5 animate-pulse text-white/60">
-                    Reading the day for you…
-                  </div>
-                )}
-                {recStatus === "ready" && recommendation && (
-                  <RecommendationHero recommendation={recommendation} />
-                )}
-                {recStatus === "unavailable" && (
-                  <p className="rounded-xl bg-white/5 border border-white/10 text-white/50 px-4 py-3 text-sm">
-                    Recommendation unavailable right now — here&apos;s the
-                    forecast.
-                  </p>
-                )}
+              // Two-pane on large screens: decisions + current on the left,
+              // the time-series (hourly + 7-day) on the right.
+              <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start">
+                <div className="space-y-6">
+                  {recStatus === "loading" && (
+                    <div className="rounded-2xl bg-white/5 border border-white/10 p-5 animate-pulse text-white/60">
+                      Reading the day for you…
+                    </div>
+                  )}
+                  {recStatus === "ready" && recommendation && (
+                    <RecommendationHero recommendation={recommendation} />
+                  )}
+                  {recStatus === "unavailable" && (
+                    <p className="rounded-xl bg-white/5 border border-white/10 text-white/50 px-4 py-3 text-sm">
+                      Recommendation unavailable right now — here&apos;s the
+                      forecast.
+                    </p>
+                  )}
+                  <CurrentConditions forecast={forecast} />
+                </div>
 
-                <CurrentConditions forecast={forecast} />
-                <HourlyStrip forecast={forecast} />
-                <DailyOutlook forecast={forecast} />
-              </>
+                <div className="space-y-6">
+                  <HourlyStrip forecast={forecast} />
+                  <DailyOutlook forecast={forecast} />
+                </div>
+              </div>
             )}
 
             {status === "idle" && (
