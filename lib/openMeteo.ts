@@ -33,6 +33,7 @@ export function parseGeocodingResponse(
   return (raw.results ?? []).map((r) => ({
     name: r.name,
     country: r.country ?? r.country_code ?? "",
+    countryCode: r.country_code,
     admin1: r.admin1,
     latitude: r.latitude,
     longitude: r.longitude,
@@ -157,6 +158,7 @@ export async function fetchForecast(
       forecast_days: 7,
       temperature_unit: units === "imperial" ? "fahrenheit" : "celsius",
       wind_speed_unit: units === "imperial" ? "mph" : "kmh",
+      precipitation_unit: units === "imperial" ? "inch" : "mm",
     },
   });
   return parseForecastResponse(data, location, units);

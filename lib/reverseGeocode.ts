@@ -25,6 +25,7 @@ export function parseReverseGeocode(
     name,
     admin1: raw.principalSubdivision || undefined,
     country: raw.countryCode ?? "",
+    countryCode: raw.countryCode,
     latitude,
     longitude,
   };

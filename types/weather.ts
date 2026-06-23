@@ -6,6 +6,7 @@ export type Units = "imperial" | "metric";
 export interface GeoLocation {
   name: string;
   country: string;
+  countryCode?: string; // ISO 3166-1 alpha-2, used for unit detection
   admin1?: string; // state / region, when available
   latitude: number;
   longitude: number;
@@ -53,10 +54,11 @@ export interface Forecast {
 export interface UnitLabels {
   temperature: string; // "°F" | "°C"
   windSpeed: string; // "mph" | "km/h"
+  precipitation: string; // "in" | "mm"
 }
 
 export function unitLabels(units: Units): UnitLabels {
   return units === "imperial"
-    ? { temperature: "°F", windSpeed: "mph" }
-    : { temperature: "°C", windSpeed: "km/h" };
+    ? { temperature: "°F", windSpeed: "mph", precipitation: "in" }
+    : { temperature: "°C", windSpeed: "km/h", precipitation: "mm" };
 }

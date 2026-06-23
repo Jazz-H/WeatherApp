@@ -24,12 +24,12 @@ const CurrentConditions = ({ forecast }: CurrentConditionsProps) => {
     { label: "Feels like", value: `${round(current.apparentTemperature)}${labels.temperature}` },
     { label: "Humidity", value: `${round(current.humidity)}%` },
     { label: "Wind", value: `${round(current.windSpeed)} ${labels.windSpeed}` },
-    { label: "Precip", value: `${current.precipitation} mm` },
+    { label: "Precip", value: `${current.precipitation} ${labels.precipitation}` },
   ];
 
   return (
     <section className="text-white" aria-label="Current conditions">
-      <h2 className="text-2xl font-semibold">{place}</h2>
+      <h2 className="text-2xl font-semibold break-words">{place}</h2>
       <div className="flex items-center justify-between mt-2">
         <div className="flex items-center gap-3">
           <Icon size={88} aria-hidden className="text-white" />

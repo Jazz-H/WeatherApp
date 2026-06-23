@@ -6,7 +6,7 @@ import {
 import type { GeoLocation } from "../types/weather";
 
 describe("parseGeocodingResponse", () => {
-  it("maps results to GeoLocation, preferring country over country_code", () => {
+  it("maps results to GeoLocation with full country name and separate countryCode", () => {
     const out = parseGeocodingResponse({
       results: [
         {
@@ -24,6 +24,7 @@ describe("parseGeocodingResponse", () => {
     expect(out[0]).toMatchObject({
       name: "Charlotte",
       country: "United States",
+      countryCode: "US",
       admin1: "North Carolina",
       latitude: 35.22,
       longitude: -80.84,
@@ -37,7 +38,8 @@ describe("parseGeocodingResponse", () => {
 
 const location: GeoLocation = {
   name: "Charlotte",
-  country: "US",
+  country: "United States",
+  countryCode: "US",
   latitude: 35.22,
   longitude: -80.84,
 };
