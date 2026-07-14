@@ -233,8 +233,8 @@ export default function Home() {
             {status === "ready" && forecast && (
               // Two-pane on large screens: decisions + current on the left,
               // the time-series (hourly + 7-day) on the right.
-              <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start">
-                <div className="space-y-6">
+              <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-6">
+                <div className="space-y-6 lg:flex lg:flex-col lg:justify-center">
                   {recStatus === "loading" && (
                     <div className="rounded-2xl bg-white/5 border border-white/10 p-5 animate-pulse text-white/60">
                       Reading the day for you…

@@ -57,7 +57,7 @@ const CurrentConditions = ({ forecast }: CurrentConditionsProps) => {
         )}
       </div>
 
-      <dl className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-5">
+      <dl className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-2 mt-5">
         {stats.map((s) => (
           <div
             key={s.label}
