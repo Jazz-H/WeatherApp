@@ -17,5 +17,7 @@ export const RecommendationSchema = z.object({
 });
 
 export type Verdict = "great" | "ok" | "skip";
-export type Activity = z.infer<typeof RecommendationSchema>["activities"][number];
+export type Activity = z.infer<
+  typeof RecommendationSchema
+>["activities"][number];
 export type Recommendation = z.infer<typeof RecommendationSchema>;

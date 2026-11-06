@@ -6,7 +6,8 @@ import type { Recommendation } from "../lib/recommendationSchema";
 
 const rec: Recommendation = {
   headline: "Light jacket — dry until 9pm",
-  summary: "Calm, mild evening. Good window for a run before the wind picks up.",
+  summary:
+    "Calm, mild evening. Good window for a run before the wind picks up.",
   activities: [
     { name: "Run", verdict: "great", reason: "Cool and dry this evening." },
     { name: "Wash the car", verdict: "skip", reason: "Rain risk after lunch." },

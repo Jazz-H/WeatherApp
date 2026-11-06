@@ -42,7 +42,8 @@ function readUnitPref(): { units: Units | null; manual: boolean } {
 function unitsForLocation(loc: GeoLocation): Units {
   const pref = readUnitPref();
   if (pref.manual && pref.units) return pref.units; // respect explicit choice
-  if (loc.countryCode ?? loc.country) return unitsForCountry(loc.countryCode ?? loc.country);
+  if (loc.countryCode ?? loc.country)
+    return unitsForCountry(loc.countryCode ?? loc.country);
   return unitsFromLocale(
     typeof navigator !== "undefined" ? navigator.language : undefined
   );
@@ -177,7 +178,7 @@ export default function Home() {
         }
         void loadForLocation(loc);
       },
-      () => setStatus("idle"),
+      () => setStatus("idle")
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -37,6 +37,9 @@ await sharp({
   .toFile(path.join(outDir, "icon-maskable-512.png"));
 
 // Apple touch icon (no transparency; iOS adds its own rounding).
-await sharp(src).resize(180, 180).png().toFile(path.join(outDir, "apple-touch-icon.png"));
+await sharp(src)
+  .resize(180, 180)
+  .png()
+  .toFile(path.join(outDir, "apple-touch-icon.png"));
 
 console.log("Generated PWA icons in public/icons/");

@@ -4,8 +4,7 @@ import type { GeoLocation } from "../types/weather";
 // Open-Meteo's geocoding API is forward-only (name -> coords), so for browser
 // geolocation we reverse-geocode the coordinates with BigDataCloud's free,
 // no-key, CORS-enabled endpoint to recover a city name and country code.
-const REVERSE_URL =
-  "https://api.bigdatacloud.net/data/reverse-geocode-client";
+const REVERSE_URL = "https://api.bigdatacloud.net/data/reverse-geocode-client";
 
 interface RawReverse {
   city?: string;

@@ -17,9 +17,10 @@ export interface SkyTheme {
   gradient: string; // CSS linear-gradient(...)
 }
 
-export function skyCategory(
-  current?: { weatherCode: number; isDay: boolean }
-): SkyCategory {
+export function skyCategory(current?: {
+  weatherCode: number;
+  isDay: boolean;
+}): SkyCategory {
   if (!current) return "clear-night";
   const { weatherCode: c, isDay } = current;
   if (c >= 95) return "storm";
@@ -32,19 +33,24 @@ export function skyCategory(
 
 const GRADIENTS: Record<SkyCategory, string> = {
   // Daytime gradients are kept deep enough that white text clears WCAG AA.
-  "clear-day": "linear-gradient(to bottom, #0c3f6b 0%, #155d92 55%, #1f6fa8 100%)",
-  "clear-night": "linear-gradient(to bottom, #0f2027 0%, #203a43 60%, #2c5364 100%)",
-  "cloud-day": "linear-gradient(to bottom, #2d4f6b 0%, #3d6c8a 60%, #4a7c98 100%)",
-  "cloud-night": "linear-gradient(to bottom, #1a2433 0%, #243244 60%, #2c3e50 100%)",
+  "clear-day":
+    "linear-gradient(to bottom, #0c3f6b 0%, #155d92 55%, #1f6fa8 100%)",
+  "clear-night":
+    "linear-gradient(to bottom, #0f2027 0%, #203a43 60%, #2c5364 100%)",
+  "cloud-day":
+    "linear-gradient(to bottom, #2d4f6b 0%, #3d6c8a 60%, #4a7c98 100%)",
+  "cloud-night":
+    "linear-gradient(to bottom, #1a2433 0%, #243244 60%, #2c3e50 100%)",
   fog: "linear-gradient(to bottom, #4a525e 0%, #353c47 60%, #2b313a 100%)",
   rain: "linear-gradient(to bottom, #2b3a47 0%, #1f2d39 60%, #16202a 100%)",
   snow: "linear-gradient(to bottom, #5b7088 0%, #44586b 60%, #2f3e4f 100%)",
   storm: "linear-gradient(to bottom, #2c3540 0%, #1a222b 60%, #11181f 100%)",
 };
 
-export function skyThemeFor(
-  current?: { weatherCode: number; isDay: boolean }
-): SkyTheme {
+export function skyThemeFor(current?: {
+  weatherCode: number;
+  isDay: boolean;
+}): SkyTheme {
   const category = skyCategory(current);
   return { category, gradient: GRADIENTS[category] };
 }

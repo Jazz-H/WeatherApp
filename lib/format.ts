@@ -6,7 +6,11 @@ export function round(n: number): number {
 
 // Position of `value` within [min, max] as a 0–100 percent (clamped).
 // Used to draw the daily temperature-range bars.
-export function percentInRange(value: number, min: number, max: number): number {
+export function percentInRange(
+  value: number,
+  min: number,
+  max: number
+): number {
   if (max <= min) return 0;
   const pct = ((value - min) / (max - min)) * 100;
   return Math.min(100, Math.max(0, pct));
