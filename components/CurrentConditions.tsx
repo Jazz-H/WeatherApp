@@ -21,10 +21,16 @@ const CurrentConditions = ({ forecast }: CurrentConditionsProps) => {
     .join(", ");
 
   const stats = [
-    { label: "Feels like", value: `${round(current.apparentTemperature)}${labels.temperature}` },
+    {
+      label: "Feels like",
+      value: `${round(current.apparentTemperature)}${labels.temperature}`,
+    },
     { label: "Humidity", value: `${round(current.humidity)}%` },
     { label: "Wind", value: `${round(current.windSpeed)} ${labels.windSpeed}` },
-    { label: "Precip", value: `${current.precipitation} ${labels.precipitation}` },
+    {
+      label: "Precip",
+      value: `${current.precipitation} ${labels.precipitation}`,
+    },
   ];
 
   return (

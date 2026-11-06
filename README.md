@@ -1,8 +1,8 @@
 # Clearcast
 
 A weather app that answers **"what can I actually do today?"** — not just temperature and
-an icon, but a short, AI‑written recommendation: *"Light jacket. Dry until 9pm — good run
-window 6–8pm. Skip the bike, gusts pick up after lunch."*
+an icon, but a short, AI‑written recommendation: _"Light jacket. Dry until 9pm — good run
+window 6–8pm. Skip the bike, gusts pick up after lunch."_
 
 Clearcast pulls a live forecast, sends a trimmed slice of it to Claude through a
 serverless function, and renders a plain‑English plan: what to wear, which activities are
@@ -26,15 +26,15 @@ background shifts with the current conditions and time of day.
 
 ## Tech stack
 
-| Layer | Choice |
-|---|---|
-| Framework | **Next.js** (pages router) + **React** + **TypeScript** (strict) |
-| Styling | **Tailwind CSS** |
-| Weather data | **Open‑Meteo** (no API key) + **BigDataCloud** reverse geocoding |
-| AI | **Claude `claude-haiku-4-5`** via a Next.js API route (`@anthropic-ai/sdk` + Zod structured output) |
-| Tests | **Vitest** + React Testing Library |
-| CI/CD | **GitHub Actions** (lint → typecheck → test → build) |
-| Hosting | **Netlify** (Next.js runtime; API route runs as a serverless function) |
+| Layer        | Choice                                                                                              |
+| ------------ | --------------------------------------------------------------------------------------------------- |
+| Framework    | **Next.js** (pages router) + **React** + **TypeScript** (strict)                                    |
+| Styling      | **Tailwind CSS**                                                                                    |
+| Weather data | **Open‑Meteo** (no API key) + **BigDataCloud** reverse geocoding                                    |
+| AI           | **Claude `claude-haiku-4-5`** via a Next.js API route (`@anthropic-ai/sdk` + Zod structured output) |
+| Tests        | **Vitest** + React Testing Library                                                                  |
+| CI/CD        | **GitHub Actions** (lint → typecheck → test → build)                                                |
+| Hosting      | **Netlify** (Next.js runtime; API route runs as a serverless function)                              |
 
 ## Architecture
 
@@ -72,10 +72,10 @@ Without `ANTHROPIC_API_KEY` the app still works — it shows the forecast and a 
 
 ## Environment variables
 
-| Variable | Required | Notes |
-|---|---|---|
-| `ANTHROPIC_API_KEY` | for the AI hero | Server‑only. Get it from the [Anthropic Console](https://console.anthropic.com). Never prefix with `NEXT_PUBLIC_`. |
-| `MAX_AI_CALLS_PER_DAY` | no | Daily cap on Claude calls (default `500`). Bounds cost. |
+| Variable               | Required        | Notes                                                                                                              |
+| ---------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `ANTHROPIC_API_KEY`    | for the AI hero | Server‑only. Get it from the [Anthropic Console](https://console.anthropic.com). Never prefix with `NEXT_PUBLIC_`. |
+| `MAX_AI_CALLS_PER_DAY` | no              | Daily cap on Claude calls (default `500`). Bounds cost.                                                            |
 
 ## Scripts
 
@@ -107,6 +107,6 @@ UI. Run `yarn test`.
 
 ## Screenshots
 
-| Recommendation (expanded) | Adaptive Sky |
-|---|---|
+| Recommendation (expanded)                                 | Adaptive Sky                                        |
+| --------------------------------------------------------- | --------------------------------------------------- |
 | ![Recommendation hero expanded](docs/screenshot-hero.png) | ![Adaptive sky background](docs/screenshot-sky.png) |

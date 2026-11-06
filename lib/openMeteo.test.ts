@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  parseForecastResponse,
-  parseGeocodingResponse,
-} from "./openMeteo";
+import { parseForecastResponse, parseGeocodingResponse } from "./openMeteo";
 import type { GeoLocation } from "../types/weather";
 
 describe("parseGeocodingResponse", () => {
@@ -102,7 +99,11 @@ describe("parseForecastResponse", () => {
 
   it("throws when the response is missing a section", () => {
     expect(() =>
-      parseForecastResponse({ current: rawForecast.current }, location, "metric")
+      parseForecastResponse(
+        { current: rawForecast.current },
+        location,
+        "metric"
+      )
     ).toThrow(/incomplete/i);
   });
 });

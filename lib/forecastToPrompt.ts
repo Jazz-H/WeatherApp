@@ -1,4 +1,4 @@
-import type { Forecast } from "../types/weather";
+import type { Forecast, Units } from "../types/weather";
 import { unitLabels } from "../types/weather";
 import { getWeatherInfo } from "./weatherCodes";
 import { upcomingHours } from "./format";
@@ -85,16 +85,21 @@ export function buildPromptPayload(
   };
 }
 
-// Cache key per the brief: lat,lon,YYYY-MM-DD-HH so we don't re-call the model
-// on every refresh within the same hour. Coordinates are rounded to ~1km to
-// improve the hit rate for nearby lookups.
+// Cache key per the brief: location, units and the hour, so we don't re-call
+// the model on every refresh within the same hour. Coordinates are rounded to
+// ~1km to improve the hit rate for nearby lookups.
 export function recommendationCacheKey(
   latitude: number,
   longitude: number,
+  units: Units,
   now: Date = new Date()
 ): string {
   const lat = latitude.toFixed(2);
   const lon = longitude.toFixed(2);
   const stamp = now.toISOString().slice(0, 13); // YYYY-MM-DDTHH
-  return `${lat},${lon},${stamp}`;
+  // The payload is no longer part of this key, and does not need to be: the
+  // route derives it server-side from exactly these inputs, so location, units
+  // and the hour determine it. Units matter because the same forecast in °F
+  // and °C produces a different recommendation.
+  return `${lat},${lon},${units},${stamp}`;
 }

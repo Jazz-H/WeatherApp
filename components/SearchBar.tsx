@@ -18,10 +18,7 @@ const SearchBar = ({ onSearch, onUseLocation }: SearchBarProps) => {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex items-center gap-2 w-full"
-    >
+    <form onSubmit={handleSubmit} className="flex items-center gap-2 w-full">
       <div className="flex items-center flex-1 gap-2 px-4 py-3 rounded-2xl bg-white/10 border border-white/20 backdrop-blur focus-within:ring-2 focus-within:ring-white/60">
         <BsSearch className="text-white/70" size={18} aria-hidden />
         <input

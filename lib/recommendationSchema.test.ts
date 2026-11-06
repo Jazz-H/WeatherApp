@@ -3,7 +3,8 @@ import { RecommendationSchema } from "./recommendationSchema";
 
 const valid = {
   headline: "Light jacket — dry until 9pm",
-  summary: "A calm, mild evening. Good window for a run before the wind picks up.",
+  summary:
+    "A calm, mild evening. Good window for a run before the wind picks up.",
   activities: [
     { name: "Run", verdict: "great", reason: "Cool and dry 6-8pm." },
     { name: "Bike", verdict: "skip", reason: "Gusts after lunch." },
