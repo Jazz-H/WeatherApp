@@ -72,7 +72,9 @@ export default async function handler(
       .json({ error: "AI recommendations are not configured." });
   }
 
-  const key = recommendationCacheKey(latitude, longitude);
+  // payload is part of the key: it is client-supplied and is what the cached
+  // recommendation describes. See recommendationCacheKey.
+  const key = recommendationCacheKey(latitude, longitude, new Date(), payload);
   const cached = cache.get(key);
   if (cached) {
     // Promote to tail so this entry is treated as most-recently-used.

@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  buildPromptPayload,
-  recommendationCacheKey,
-} from "./forecastToPrompt";
+import { buildPromptPayload, recommendationCacheKey } from "./forecastToPrompt";
 import type { Forecast } from "../types/weather";
 
 function makeForecast(): Forecast {
@@ -80,10 +77,53 @@ describe("recommendationCacheKey", () => {
   });
 
   it("changes on the hour boundary but not within the same hour", () => {
-    const a = recommendationCacheKey(35.23, -80.84, new Date("2026-06-22T12:05:00Z"));
-    const b = recommendationCacheKey(35.23, -80.84, new Date("2026-06-22T12:55:00Z"));
-    const c = recommendationCacheKey(35.23, -80.84, new Date("2026-06-22T13:01:00Z"));
+    const a = recommendationCacheKey(
+      35.23,
+      -80.84,
+      new Date("2026-06-22T12:05:00Z")
+    );
+    const b = recommendationCacheKey(
+      35.23,
+      -80.84,
+      new Date("2026-06-22T12:55:00Z")
+    );
+    const c = recommendationCacheKey(
+      35.23,
+      -80.84,
+      new Date("2026-06-22T13:01:00Z")
+    );
     expect(a).toBe(b);
     expect(a).not.toBe(c);
+  });
+});
+
+describe("recommendationCacheKey payload binding", () => {
+  const now = new Date("2026-06-22T12:05:00Z");
+
+  it("gives different keys to different payloads at the same place and hour", () => {
+    // Regression guard. Keying on location+hour alone meant one client's
+    // payload decided the cached recommendation every later visitor to that
+    // location received for the rest of the hour.
+    const a = recommendationCacheKey(35.23, -80.84, now, { temperature: 70 });
+    const b = recommendationCacheKey(35.23, -80.84, now, { temperature: 20 });
+    expect(a).not.toBe(b);
+  });
+
+  it("gives the same key to the same payload, so caching still works", () => {
+    const a = recommendationCacheKey(35.23, -80.84, now, { temperature: 70 });
+    const b = recommendationCacheKey(35.23, -80.84, now, { temperature: 70 });
+    expect(a).toBe(b);
+  });
+
+  it("still keys on location and hour when no payload is given", () => {
+    expect(recommendationCacheKey(35.23, -80.84, now)).toBe(
+      "35.23,-80.84,2026-06-22T12"
+    );
+  });
+
+  it("keeps the location and hour prefix when a payload is given", () => {
+    expect(
+      recommendationCacheKey(35.23, -80.84, now, { temperature: 70 })
+    ).toMatch(/^35\.23,-80\.84,2026-06-22T12,[0-9a-f]{8}$/);
   });
 });
