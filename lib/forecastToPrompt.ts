@@ -1,4 +1,4 @@
-import type { Forecast } from "../types/weather";
+import type { Forecast, Units } from "../types/weather";
 import { unitLabels } from "../types/weather";
 import { getWeatherInfo } from "./weatherCodes";
 import { upcomingHours } from "./format";
@@ -85,37 +85,21 @@ export function buildPromptPayload(
   };
 }
 
-// Cache key per the brief: lat,lon,YYYY-MM-DD-HH so we don't re-call the model
-// on every refresh within the same hour. Coordinates are rounded to ~1km to
-// improve the hit rate for nearby lookups.
-// FNV-1a, 32-bit. A hand-rolled hash rather than node:crypto because this
-// module is also imported by the browser bundle (buildPromptPayload), where
-// node:crypto is unavailable. It needs to be stable and fast, not
-// cryptographic: its only job is to keep two different payloads out of the
-// same cache slot.
-function hashPayload(payload: unknown): string {
-  const json = JSON.stringify(payload) ?? "null";
-  let h = 0x811c9dc5;
-  for (let i = 0; i < json.length; i += 1) {
-    h ^= json.charCodeAt(i);
-    h = Math.imul(h, 0x01000193) >>> 0;
-  }
-  return h.toString(16).padStart(8, "0");
-}
-
+// Cache key per the brief: location, units and the hour, so we don't re-call
+// the model on every refresh within the same hour. Coordinates are rounded to
+// ~1km to improve the hit rate for nearby lookups.
 export function recommendationCacheKey(
   latitude: number,
   longitude: number,
-  now: Date = new Date(),
-  payload?: unknown
+  units: Units,
+  now: Date = new Date()
 ): string {
   const lat = latitude.toFixed(2);
   const lon = longitude.toFixed(2);
   const stamp = now.toISOString().slice(0, 13); // YYYY-MM-DDTHH
-  const base = `${lat},${lon},${stamp}`;
-  // The payload is supplied by the caller and is what the cached
-  // recommendation actually describes, so it has to be part of the key.
-  // Keying on location and hour alone let one client's payload decide what
-  // every later visitor to that location saw for the rest of the hour.
-  return payload === undefined ? base : `${base},${hashPayload(payload)}`;
+  // The payload is no longer part of this key, and does not need to be: the
+  // route derives it server-side from exactly these inputs, so location, units
+  // and the hour determine it. Units matter because the same forecast in °F
+  // and °C produces a different recommendation.
+  return `${lat},${lon},${units},${stamp}`;
 }

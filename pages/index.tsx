@@ -18,7 +18,6 @@ import {
 } from "../lib/openMeteo";
 import { reverseGeocode } from "../lib/reverseGeocode";
 import { unitsForCountry, unitsFromLocale } from "../lib/units";
-import { buildPromptPayload } from "../lib/forecastToPrompt";
 import type { Forecast, GeoLocation, Units } from "../types/weather";
 import type { Recommendation } from "../lib/recommendationSchema";
 
@@ -73,10 +72,13 @@ export default function Home() {
     setRecStatus("loading");
     setRecommendation(null);
     try {
+      // Only the coordinates and the unit system go over the wire. The route
+      // fetches the forecast and builds the prompt itself, so nothing the
+      // browser sends becomes prompt text.
       const { data: body } = await axios.post("/api/summarize", {
-        payload: buildPromptPayload(data),
         latitude: data.location.latitude,
         longitude: data.location.longitude,
+        units: data.units,
       });
       setRecommendation(body.recommendation);
       setRecStatus("ready");

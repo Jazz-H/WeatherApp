@@ -69,61 +69,47 @@ describe("buildPromptPayload", () => {
 });
 
 describe("recommendationCacheKey", () => {
-  it("keys by rounded coordinates and the current hour", () => {
+  it("keys by rounded coordinates, units and the current hour", () => {
     const now = new Date("2026-06-22T12:34:56Z");
-    expect(recommendationCacheKey(35.227, -80.843, now)).toBe(
-      "35.23,-80.84,2026-06-22T12"
+    expect(recommendationCacheKey(35.227, -80.843, "imperial", now)).toBe(
+      "35.23,-80.84,imperial,2026-06-22T12"
     );
   });
 
   it("changes on the hour boundary but not within the same hour", () => {
-    const a = recommendationCacheKey(
-      35.23,
-      -80.84,
-      new Date("2026-06-22T12:05:00Z")
+    const at = (iso: string) =>
+      recommendationCacheKey(35.23, -80.84, "imperial", new Date(iso));
+    expect(at("2026-06-22T12:05:00Z")).toBe(at("2026-06-22T12:55:00Z"));
+    expect(at("2026-06-22T12:05:00Z")).not.toBe(at("2026-06-22T13:01:00Z"));
+  });
+
+  it("separates imperial from metric at the same place and hour", () => {
+    // The same forecast rendered in °F and in °C produces a different
+    // recommendation, so they must not share a cache entry.
+    const now = new Date("2026-06-22T12:05:00Z");
+    expect(recommendationCacheKey(35.23, -80.84, "imperial", now)).not.toBe(
+      recommendationCacheKey(35.23, -80.84, "metric", now)
     );
-    const b = recommendationCacheKey(
-      35.23,
-      -80.84,
-      new Date("2026-06-22T12:55:00Z")
+  });
+
+  it("is stable for the same inputs, so caching still works", () => {
+    const now = new Date("2026-06-22T12:05:00Z");
+    expect(recommendationCacheKey(35.23, -80.84, "metric", now)).toBe(
+      recommendationCacheKey(35.23, -80.84, "metric", now)
     );
-    const c = recommendationCacheKey(
-      35.23,
-      -80.84,
-      new Date("2026-06-22T13:01:00Z")
+  });
+
+  it("separates nearby places once they round apart", () => {
+    const now = new Date("2026-06-22T12:05:00Z");
+    expect(recommendationCacheKey(35.23, -80.84, "imperial", now)).not.toBe(
+      recommendationCacheKey(35.31, -80.84, "imperial", now)
     );
-    expect(a).toBe(b);
-    expect(a).not.toBe(c);
   });
 });
 
-describe("recommendationCacheKey payload binding", () => {
-  const now = new Date("2026-06-22T12:05:00Z");
-
-  it("gives different keys to different payloads at the same place and hour", () => {
-    // Regression guard. Keying on location+hour alone meant one client's
-    // payload decided the cached recommendation every later visitor to that
-    // location received for the rest of the hour.
-    const a = recommendationCacheKey(35.23, -80.84, now, { temperature: 70 });
-    const b = recommendationCacheKey(35.23, -80.84, now, { temperature: 20 });
-    expect(a).not.toBe(b);
-  });
-
-  it("gives the same key to the same payload, so caching still works", () => {
-    const a = recommendationCacheKey(35.23, -80.84, now, { temperature: 70 });
-    const b = recommendationCacheKey(35.23, -80.84, now, { temperature: 70 });
-    expect(a).toBe(b);
-  });
-
-  it("still keys on location and hour when no payload is given", () => {
-    expect(recommendationCacheKey(35.23, -80.84, now)).toBe(
-      "35.23,-80.84,2026-06-22T12"
-    );
-  });
-
-  it("keeps the location and hour prefix when a payload is given", () => {
-    expect(
-      recommendationCacheKey(35.23, -80.84, now, { temperature: 70 })
-    ).toMatch(/^35\.23,-80\.84,2026-06-22T12,[0-9a-f]{8}$/);
-  });
-});
+// The payload is no longer part of the key. It used to be, because the route
+// accepted it from the browser: keying on location and hour alone let one
+// client's payload decide the cached recommendation every later visitor to
+// that location received for the rest of the hour. The route now derives the
+// payload server-side from exactly the inputs above, so there is nothing
+// client-supplied left for the key to have to account for.

@@ -5,7 +5,13 @@ import {
   RecommendationSchema,
   type Recommendation,
 } from "../../lib/recommendationSchema";
-import { recommendationCacheKey } from "../../lib/forecastToPrompt";
+import {
+  buildPromptPayload,
+  recommendationCacheKey,
+} from "../../lib/forecastToPrompt";
+import { fetchForecast } from "../../lib/openMeteo";
+import { reverseGeocode } from "../../lib/reverseGeocode";
+import type { GeoLocation, Units } from "../../types/weather";
 
 // This route runs server-side ONLY and is the single place the Claude API key
 // is used. It must never be exposed to the browser.
@@ -42,10 +48,34 @@ function withinDailyCap(): boolean {
 }
 
 type SummarizeBody = {
-  payload?: unknown;
   latitude?: number;
   longitude?: number;
+  units?: Units;
 };
+
+// The forecast is fetched here rather than accepted from the caller. The route
+// used to take a `payload` from the browser and interpolate it straight into
+// the prompt, which made the request body prompt input and meant the cache key
+// had to carry a hash of it to stay honest. Deriving it from the coordinates
+// closes that and makes location + units + hour a complete key on its own.
+// Exported for its unit test: the upstream calls it makes cannot run in CI,
+// so the branching is covered with those two modules mocked.
+export async function buildPayloadFor(
+  latitude: number,
+  longitude: number,
+  units: Units
+) {
+  // A failed reverse geocode costs the place name in the prompt, nothing more,
+  // so it should not lose the recommendation.
+  let location: GeoLocation;
+  try {
+    location = await reverseGeocode(latitude, longitude);
+  } catch {
+    location = { name: "", country: "", latitude, longitude };
+  }
+  const forecast = await fetchForecast(location, units);
+  return buildPromptPayload(forecast);
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -56,13 +86,21 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { payload, latitude, longitude } = req.body as SummarizeBody;
+  const { latitude, longitude, units } = req.body as SummarizeBody;
   if (
-    payload == null ||
     typeof latitude !== "number" ||
-    typeof longitude !== "number"
+    !Number.isFinite(latitude) ||
+    latitude < -90 ||
+    latitude > 90 ||
+    typeof longitude !== "number" ||
+    !Number.isFinite(longitude) ||
+    longitude < -180 ||
+    longitude > 180
   ) {
-    return res.status(400).json({ error: "Missing payload or coordinates" });
+    return res.status(400).json({ error: "Invalid coordinates" });
+  }
+  if (units !== "imperial" && units !== "metric") {
+    return res.status(400).json({ error: "Invalid units" });
   }
 
   if (!process.env.ANTHROPIC_API_KEY) {
@@ -72,9 +110,7 @@ export default async function handler(
       .json({ error: "AI recommendations are not configured." });
   }
 
-  // payload is part of the key: it is client-supplied and is what the cached
-  // recommendation describes. See recommendationCacheKey.
-  const key = recommendationCacheKey(latitude, longitude, new Date(), payload);
+  const key = recommendationCacheKey(latitude, longitude, units);
   const cached = cache.get(key);
   if (cached) {
     // Promote to tail so this entry is treated as most-recently-used.
@@ -91,6 +127,7 @@ export default async function handler(
   }
 
   try {
+    const payload = await buildPayloadFor(latitude, longitude, units);
     const client = new Anthropic();
     const response = await client.messages.parse({
       model: "claude-haiku-4-5",
