@@ -2,16 +2,20 @@
  * buildPayloadFor is the part of /api/summarize that replaced the
  * client-supplied `payload`. Its two upstream calls cannot run in CI, so they
  * are mocked and the branching is asserted directly.
+ *
+ * Lives in lib/ rather than beside the route: Next treats every .ts under
+ * pages/ as a route, so pages/api/summarize.test.ts was built and deployed as
+ * a live /api/summarize.test endpoint.
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Forecast, GeoLocation } from "../../types/weather";
+import type { Forecast, GeoLocation } from "../types/weather";
 
-vi.mock("../../lib/openMeteo", () => ({ fetchForecast: vi.fn() }));
-vi.mock("../../lib/reverseGeocode", () => ({ reverseGeocode: vi.fn() }));
+vi.mock("./openMeteo", () => ({ fetchForecast: vi.fn() }));
+vi.mock("./reverseGeocode", () => ({ reverseGeocode: vi.fn() }));
 
-import { fetchForecast } from "../../lib/openMeteo";
-import { reverseGeocode } from "../../lib/reverseGeocode";
-import { buildPayloadFor } from "./summarize";
+import { fetchForecast } from "./openMeteo";
+import { reverseGeocode } from "./reverseGeocode";
+import { buildPayloadFor } from "../pages/api/summarize";
 
 const CHARLOTTE: GeoLocation = {
   name: "Charlotte",

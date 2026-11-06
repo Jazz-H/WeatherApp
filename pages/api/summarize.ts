@@ -16,7 +16,9 @@ import type { GeoLocation, Units } from "../../types/weather";
 // This route runs server-side ONLY and is the single place the Claude API key
 // is used. It must never be exposed to the browser.
 
-const SYSTEM_PROMPT =
+// Exported so the model-comparison test prompts both models identically —
+// a copy would drift and make the comparison meaningless.
+export const SYSTEM_PROMPT =
   "You turn raw weather forecast data into a short, friendly recommendation about " +
   "what the user can do today. Be specific and decisive. Recommend what to wear and " +
   "which activities are good, ok, or worth skipping, and the best time window. " +
