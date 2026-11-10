@@ -63,6 +63,9 @@ export default function Home() {
   // mismatch). Auto-derived units are applied later when a location resolves.
   useEffect(() => {
     const pref = readUnitPref();
+    // Deliberate: localStorage only exists after hydration, so this one-time
+    // restore has to run in an effect rather than in useState's initializer.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (pref.manual && pref.units) setUnits(pref.units);
   }, []);
 
